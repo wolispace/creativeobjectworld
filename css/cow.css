@@ -1,0 +1,21 @@
+/* css for cow_ui.html a jQuery mobile site */
+
+h1 {
+  text-shadow: 0 0 10px dodgerblue;
+}
+
+#cmd {
+ margin-left:2.4em;
+ width:70%;
+}
+
+.setting {
+ margin-bottom:1em;
+ border-bottom:1px solid silver;
+}
+
+
+a {
+ text-decoration:none !important;
+}
+
