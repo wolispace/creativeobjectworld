@@ -1,8 +1,31 @@
-  var objOne = getObj("mouse");
+  var ObjectCache = function() {
+    this.store = {};
+    this.getObj = function(objId) {
+      if (typeof this.store[objId] == 'undefined') {
+        this.store[objId] = buildObj(objId);
+      }
+      return this.store[objId];
+    };
+    this.jsonData = {};
+  };
+  
+  var objStore = new ObjectCache();
+  
+  var objOne = objStore.getObj("mouse");
   console.log(objOne.longName);
   
-  objOne = getObj("house");
+  objOne = objStore.getObj("house");
   console.log(objOne.longName);
+  
+  objOne = objStore.getObj("house");
+  console.log(objOne.longName);
+  
+  objOne = objStore.getObj("mouse");
+  console.log(objOne.longName);
+
+  objOne = objStore.getObj("mouse");
+  console.log(objOne.longName);
+
   
   function getObject(id) {
     var objList = {
@@ -15,8 +38,11 @@
     return jsonObject;
   }
   
+  
+
+  
   // retrives a basic object and fleshes it out with nice descriptions and default values..
-  function getObj(id) {
+  function buildObj(id) {
     var d = getObject(id);
     d.name = (!d.name) ? 'unkown object' : d.name;
     d.qty = (!d.qty) ? 1 : d.qty;
@@ -58,7 +84,7 @@
     }
     var inLoc = '';
     if (d.loc != 'void' && d.loc !== '') {
-      var tmpObj = getObj(d.loc);
+      var tmpObj = objStore.getObj(d.loc);
       inLoc = ' '+d.relToLoc+' '+tmpObj.qtyText+' '+tmpObj.extra+' '+tmpObj.pluralName;
     }    
     d.longName = d.qtyText+' '+d.extra+' '+d.pluralName+inLoc;
