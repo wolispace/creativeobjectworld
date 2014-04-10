@@ -1,14 +1,13 @@
+var settings = require('./settings.js');
+
 var app = require('http').createServer(handler),
     fs = require('fs'),
     url = require('url'),
     mongo = require('mongoskin'),
-    path = require('path'),
-    settings = {root: '.',
-                port: process.env.PORT,
-                host: process.env.IP};
+    path = require('path');
+    
 
-
-app.listen(process.env.PORT);
+app.listen(settings.port);
 // kill $(ps ax | grep '[j]s' | awk '{ print $1 }')
 
 // handle requests..
@@ -105,4 +104,4 @@ function getContentType(fileName) {
   return {'Content-Type': extensions[path.extname(fileName)]};
 }
 
-console.log('Listening on '+process.env.IP+':'+settings.port);
+console.log('Listening on '+settings.host+':'+settings.port);

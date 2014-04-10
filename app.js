@@ -4,7 +4,8 @@
 	var CowObject = function(jsonObj) {
     try {
       var data = jsonObj; // (typeof jsonObj === "string") ? JSON.parse(jsonObj) : jsonObj;
-      //console.log(data);
+      
+      console.log(data);
     } catch(err) {
       console.log(err);
       console.log("Freakout man. json could not parse the string["+jsonObj+"]");
@@ -16,13 +17,16 @@
     this.qty        = getQtyNumber();
     this.qtyText    = getQtyText(this.name);
     this.loc        = getLoc();
-console.log(this);
+    this.relToHost  = 'in';
+  console.log('building '+this.name);
 
     function getName() {
       return (data.name) ? data.name : 'unkown object';
     }
 
     function getLoc() {
+      console.log('my loc=');
+      console.log(data.loc);
       return (data.loc) ? data.loc : 'void';
     }
   
@@ -40,9 +44,13 @@ console.log(this);
       var qty = getQtyText(getName());
       var extra = (data.extra) ? data.extra : '';
       
-      var inLoc = (getLoc() != 'void') ? new CowObject(getLoc()) : '';
+      var inLoc = '';
+      if (getLoc() != 'void') {
+        var tmpObj = new CowObject(getLoc());
+        inLoc = ' '+tmpObj.relToHost+' '+tmpObj.pluralName;
+      };
       
-      return qty+' '+extra+' '+getPluralName()+' in '+inLoc;
+      return qty+' '+extra+' '+getPluralName()+inLoc;
     }
   
     function getQtyNumber() {
@@ -80,16 +88,19 @@ console.log(this);
 
   function getObject(id) {
     var objList = {
-      "123":{"id":"123", "name":"house", "qty":"2", "extra":"red brick", "loc":"openfield"},
+      "house":{"id":"house", "name":"house", "qty":"2", "extra":"red brick", "loc":"openfield"},
       "openfield":{"id":"openfield", "name":"open field", "qty":"1", "extra":"large", "loc":"void"},
-      "smallmouse":{"id":"openfield", "name":"open field", "qty":"1", "extra":"large", "loc":"void"}
+      "smallmouse":{"id":"smallmouse", "name":"open field", "qty":"1", "extra":"large", "loc":"openfield"}
     };
 
-    var objString = objList[id];
-    return objString;
+    var jsonObject = objList[id];
+    return jsonObject;
   }
 
-  var myObj = new CowObject(getObject("openfield"));
-  
-  console.log(myObj.shortName);
-  console.log(myObj.longName);
+  var myRawObj = getObject("house");
+  if (myRawObj) {
+    var myObj = new CowObject(myRawObj);
+    console.log(myObj.longName);
+  } else {
+    console.log("Not found")
+  }

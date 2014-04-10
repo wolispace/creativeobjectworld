@@ -1,13 +1,15 @@
-var cow_global = {};
+//var cow_global = {};
 $(document).ready( function() {
   initPage();
 });
 
 // what to do when the first page loads and things need initialising..
 function initPage() {
-  cow_global.url = 'https://creativeobjectworld-c9-wolispace.c9.io';
-  cow_global.noServer = false; // when we want to fake the json sending and recieving..
-
+  //cow_global.url = 'https://creativeobjectworld-c9-wolispace.c9.io';
+  //cow_global.url = 'http://wolispace.kd.io:8888';
+  //cow_global.noServer = false; // when we want to fake the json sending and recieving..
+  console.log(settings);
+  
   $('#cmd').keydown( function(e) { enterCmd(e); } );
   $('#name').keydown( function(e) { enterName(e); } );
   $('#pwd').keydown( function(e) { enterPwd(e); } );
@@ -152,7 +154,7 @@ function sendCmd(cmd) {
 
 // send json and receive json..
 function jsonRequest(urlParams, successFunction) {
-  if( cow_global.noServer ) {
+  if( settings.noServer ) {
 
     // faking a json response..
     console.log( urlParams );
@@ -175,7 +177,7 @@ function jsonRequest(urlParams, successFunction) {
     successFunction( jsonData );
 
   } else {
-    $.getJSON( cow_global.url, urlParams )
+    $.getJSON( settings.url, urlParams )
     .done( successFunction )
     .fail(function( jqxhr, textStatus, error ) {
       console.log( jqxhr );
