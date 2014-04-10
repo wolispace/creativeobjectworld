@@ -1,106 +1,68 @@
-
-
-	// chuck a json string in here and it can be interrogated for display etc..
-	var CowObject = function(jsonObj) {
-    try {
-      var data = jsonObj; // (typeof jsonObj === "string") ? JSON.parse(jsonObj) : jsonObj;
-      
-      console.log(data);
-    } catch(err) {
-      console.log(err);
-      console.log("Freakout man. json could not parse the string["+jsonObj+"]");
-    }
-    
-    this.name       = getName();
-    this.longName   = getLongName();
-    this.pluralName = getPluralName();
-    this.qty        = getQtyNumber();
-    this.qtyText    = getQtyText(this.name);
-    this.loc        = getLoc();
-    this.relToHost  = 'in';
-  console.log('building '+this.name);
-
-    function getName() {
-      return (data.name) ? data.name : 'unkown object';
-    }
-
-    function getLoc() {
-      console.log('my loc=');
-      console.log(data.loc);
-      return (data.loc) ? data.loc : 'void';
-    }
+  var objOne = getObj("mouse");
+  console.log(objOne.longName);
   
-    function getPluralName() {
-      var name = getName();
-      if (getQtyNumber() > 1) {
-        var plurals = {'knife':'knives', 'sheep':'sheep', 'loaf':'loaves'};
-        var plural = plurals[name];
-        name = (plural === undefined) ? name+'s' : plural;
-      }
-      return name;
-    } 
-    
-    function getLongName() {
-      var qty = getQtyText(getName());
-      var extra = (data.extra) ? data.extra : '';
-      
-      var inLoc = '';
-      if (getLoc() != 'void') {
-        var tmpObj = new CowObject(getLoc());
-        inLoc = ' '+tmpObj.relToHost+' '+tmpObj.pluralName;
-      };
-      
-      return qty+' '+extra+' '+getPluralName()+inLoc;
-    }
+  objOne = getObj("house");
+  console.log(objOne.longName);
   
-    function getQtyNumber() {
-      return (data.qty) ? data.qty : 1;
-    }
-    
-    function getQtyText(name2) {
-      var qty = getQtyNumber();
-      console.log("name="+name2);
-      
-      if (qty == 1) {
-        qty = ('aeiou'.indexOf(name2.substr(0,1))) ? 'an' : 'a';
-      } else if (qty == 2) {
-        qty = 'two';
-      } else if (qty == 3) {
-        qty = 'three';
-      } else if (qty == -1) {
-        qty = 'the';
-      } else if (qty < 10) {
-        qty = 'some';
-      } else if (qty < 99) {
-        qty = 'many';
-      } else if (qty < 999) {
-        qty = 'hundreds';
-      } else if (qty < 999999) {
-        qty = 'thousands';
-      } else if (qty < 999999999) {
-        qty = 'millions';
-      } else {
-        qty = 'truckloads of'
-      }
-      return qty; 
-    }
-  }
-
   function getObject(id) {
     var objList = {
-      "house":{"id":"house", "name":"house", "qty":"2", "extra":"red brick", "loc":"openfield"},
+      "house":{"id":"house", "name":"house", "qty":"1", "extra":"red brick", "loc":"openfield"},
       "openfield":{"id":"openfield", "name":"open field", "qty":"1", "extra":"large", "loc":"void"},
-      "smallmouse":{"id":"smallmouse", "name":"open field", "qty":"1", "extra":"large", "loc":"openfield"}
+      "mouse":{"id":"mouse", "name":"mouse", "qty":"4000", "extra":"small", "loc":"house"}
     };
 
     var jsonObject = objList[id];
     return jsonObject;
   }
-
-  var myRawObj = getObject("house");
-  if (myRawObj) {
-    var myObj = new CowObject(myRawObj);
-    console.log(myObj.longName);
-  } else {
-    console.log("Not found")
+  
+  // retrives a basic object and fleshes it out with nice descriptions and default values..
+  function getObj(id) {
+    var d = getObject(id);
+    d.name = (!d.name) ? 'unkown object' : d.name;
+    d.qty = (!d.qty) ? 1 : d.qty;
+    d.extra = (!d.extra) ? '' : d.extra;
+    d.loc = (!d.loc) ? 'void' : d.loc;
+    d.relToLoc = (!d.relToLoc) ? 'in' : d.relToLoc;
+    d.host = (!d.host) ? 'void' : d.host;
+    d.relToHost = (!d.relToHost) ? 'on' : d.relToHost;
+    d.qtyText = d.qty;
+    if (d.qty == 1) {
+      d.qtyText = ('aeiou'.indexOf(d.name.substr(0,1)) > -1) ? 'an' : 'a';
+    } else if (d.qty == 2) {
+      d.qtyText = 'two';
+    } else if (d.qty == 3) {
+      d.qtyText = 'three';
+    } else if (d.qty == -1) {
+      d.qtyText = 'the';
+    } else if (d.qty < 10) {
+      d.qtyText = d.qty;
+    } else if (d.qty < 20) {
+      d.qtyText = 'some';
+    } else if (d.qty < 99) {
+      d.qtyText = 'many';
+    } else if (d.qty < 999) {
+      d.qtyText = 'hundreds of';
+    } else if (d.qty < 999999) {
+      d.qtyText = 'thousands of';
+    } else if (d.qty < 999999999) {
+      d.qtyText = 'millions of';
+    } else {
+      d.qtyText = 'a mind-boggling quantity of';
+    }
+    if (d.qty > 1) {
+      var plurals = {'knife':'knives', 'sheep':'sheep', 'loaf':'loaves','mouse':'mice'};
+      var plural = plurals[d.name];
+      d.pluralName = (plural === undefined) ? d.name+'s' : plural;
+    } else {
+      d.pluralName = d.name;
+    }
+    var inLoc = '';
+    if (d.loc != 'void' && d.loc !== '') {
+      var tmpObj = getObj(d.loc);
+      inLoc = ' '+d.relToLoc+' '+tmpObj.qtyText+' '+tmpObj.extra+' '+tmpObj.pluralName;
+    }    
+    d.longName = d.qtyText+' '+d.extra+' '+d.pluralName+inLoc;
+      
+    return d;
   }
+  
