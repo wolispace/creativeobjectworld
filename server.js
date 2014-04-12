@@ -57,11 +57,16 @@ function queryDatabase(query, res) {
           if (err) {
             throw err;
           }
+
+          var objList = {};
+          for (var i=0; i < items.length; i++) {
+            objList[items[i].id] = items[i];
+          }
           // the end of our processing now return something to the browser..
           // ui wants {log:'msg to log'}..
-          items = {log:JSON.stringify(items)};
+          items = {log:objList};
           var data = JSON.stringify(items);
-          //console.log('data='+data);
+          console.log('data='+data);
           res.writeHead(200, {'Content-Type': 'text/plain'});
           return res.end(data);
         }

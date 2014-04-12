@@ -17,6 +17,7 @@
       d.updated = (!d.updated) ? '' : d.updated;
       d.name = (!d.name) ? 'unkown object' : d.name;
       d.qty = (!d.qty) ? 1 : d.qty;
+      d.colour = (!d.colour) ? '' : d.colour;
       d.extra = (!d.extra) ? '' : d.extra;
       d.loc = (!d.loc) ? 'void' : d.loc;
       d.relToLoc = (!d.relToLoc) ? 'in' : d.relToLoc;
@@ -56,14 +57,19 @@
       var inLoc = '';
       if (d.loc != 'void' && d.loc !== '') {
         var tmpObj = objStore.getObj(d.loc);
-        inLoc = ' '+d.relToLoc+' '+tmpObj.qtyText+' '+tmpObj.extra+' '+tmpObj.pluralName;
-      }    
-      d.longName = d.qtyText+' '+d.extra+' '+d.pluralName+inLoc;
-        
+        console.log(tmpObj.htmlLink);
+        inLoc = d.relToLoc+' '+tmpObj.htmlLink;
+      }
+      d.inLoc = inLoc;
+      d.longName = d.qtyText+' '+d.extra+' '+d.pluralName;
+      d.htmlLink = '<a href="#" onclick="clickObj(\''+d.id+'\')" class="objLink '+d.colour+'">'+d.longName+'</a>';  
+      
       return d;
     };
   };
 
+var testCache = false;
+if (testCache) {
   var rawDataFromServer = {
     "house":{"id":"house", "name":"house", "qty":"1", "extra":"red brick", "loc":"openfield", "updated":"20140410010101"},
     "openfield":{"id":"openfield", "name":"open field", "qty":"1", "extra":"large", "loc":"void", "updated":"20140410010101"},
@@ -75,10 +81,10 @@
   objStore.data = rawDataFromServer;  
   
   var objOne = objStore.getObj("mouse");
-  console.log(objOne.longName);
-  
+  console.log(objOne.htmlLink+' '+objOne.inLoc);
+
   objOne = objStore.getObj("house");
-  console.log(objOne.longName);
+  console.log(objOne.htmlLink+' '+objOne.inLoc);
   
   rawDataFromServer = {
     "can":{"name":"can", "qty":"3", "extra":"tin", "loc":"house", "updated":"20140410010101"},
@@ -88,17 +94,12 @@
   objStore.data = rawDataFromServer;
   
   objOne = objStore.getObj("can");
-  console.log(objOne.longName);
+  console.log(objOne.htmlLink+' '+objOne.inLoc);
   
   objOne = objStore.getObj("mouse");
-  console.log(objOne.longName);
+  console.log(objOne.htmlLink+' '+objOne.inLoc);
 
   objOne = objStore.getObj("house");
-  console.log(objOne.longName);
+  console.log(objOne.htmlLink+' '+objOne.inLoc);
+}
 
-
-  
-
-  
-
-  

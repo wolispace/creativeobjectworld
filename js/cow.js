@@ -1,14 +1,12 @@
 //var cow_global = {};
+var objStore = new ObjectCache();
+
 $(document).ready( function() {
   initPage();
 });
 
 // what to do when the first page loads and things need initialising..
 function initPage() {
-  //cow_global.url = 'https://creativeobjectworld-c9-wolispace.c9.io';
-  //cow_global.url = 'http://wolispace.kd.io:8888';
-  //cow_global.noServer = false; // when we want to fake the json sending and recieving..
-  console.log(settings);
   
   $('#cmd').keydown( function(e) { enterCmd(e); } );
   $('#name').keydown( function(e) { enterName(e); } );
@@ -116,18 +114,24 @@ function sendCmd(cmd) {
   urlParams.cmd = cmd;
   jsonRequest( JSON.stringify(urlParams), function( jsonData ) {
 
-   debug( 'log:['+jsonData.log+']' );
-   debug( 'look['+jsonData.look+']' );
-   debug( 'read['+jsonData.read+']' );
-   debug( 'edit['+jsonData.edit+']' );
-   debug( 'error['+jsonData.error+']' );
+    debug( 'log:['+jsonData.log+']' );
+    debug( 'look['+jsonData.look+']' );
+    debug( 'read['+jsonData.read+']' );
+    debug( 'edit['+jsonData.edit+']' );
+    debug( 'error['+jsonData.error+']' );
 
-   if( handleResultsOk( jsonData ) ) {
-     var tabShown = false;
-     if( jsonData.log !== '' ) {
-       addMessage( jsonData.log );
-       highlightTab('log');
-     }
+    if( handleResultsOk( jsonData ) ) {
+      var tabShown = false;
+      if( jsonData.log !== '' ) {
+        objStore.data = jsonData.log; 
+        var msg = '';
+        for (var id in jsonData.log) { 
+          var objOne = objStore.getObj(id);
+          msg += objOne.htmlLink+' '+objOne.inLoc+'<br/>';
+        }
+        addMessage( msg );
+        highlightTab('log');
+      }
      if( jsonData.read !== undefined ) {
        showTab('read');
        $('#read').html( jsonData.read );
