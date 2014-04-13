@@ -1,5 +1,9 @@
 CreativeObjectWorld (cow) using node.js and mongodb
 
+  ___  http://creativeobjectworld.com
+/\___\ a free-form, text-based, browser-based, 
+\/___/ real-time, multi-user virtual world
+
 js modules:
 jquery and jQuery-UI Mobile for front end.
 
