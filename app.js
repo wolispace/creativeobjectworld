@@ -15,7 +15,7 @@
       var d = (typeof this.data[objId] == 'undefined') ? {} : this.data[objId];
       d.id = objId;
       d.updated = (!d.updated) ? '' : d.updated;
-      d.name = (!d.name) ? 'ficticious object' : d.name;
+      d.name = (!d.name) ? 'transparent object' : d.name;
       d.qty = (!d.qty) ? 1 : d.qty;
       d.colour = (!d.colour) ? '' : d.colour;
       d.extra = (!d.extra) ? '' : d.extra;

@@ -45,12 +45,10 @@ function queryDatabase(query, res) {
     thingToFind;
 
   // parse the typed in command into actions to perform and things to perform them on..
-  data = parseCommand(data);
-  console.log(data);
-  console.log(data.cmd.toLowerCase());
-  
+  data = parseCommand(db, data);
+
   // different commands use diferent collections..
-  if (data.cmd.toLowerCase() == 'list') {
+  if (data.cmd == 'list') {
     storage = db.collection('objects');
     thingToFind = {loc:data.target};
       // return an array of objects in the collection 'objects' that match the criteria..
@@ -81,13 +79,15 @@ function queryDatabase(query, res) {
   }
 }
 
-// convert the passed cmd in the json string into useful bits {'cmd':'creat a small white fluffy mouse','actor':'abdok'}
-function parseCommand(data) {
+// convert the passed cmd in the json string into useful bits {'cmd':'create a small white fluffy mouse','actor':'abdok'}
+function parseCommand(db, data) {
   if (data.cmd) {
-    var poss = data.cmd.toLowerCase().indexOf('list');
-    if (poss > -1) {
-      data.target = data.cmd.replace(/list /i, '').trim();
-      data.cmd = 'list';
+    // grab first word..
+    var words = data.cmd.split(' ');
+    var action = words[0].toLowerCase().trim();
+    if (action === 'list') {
+      data.target = (typeof words[1] == 'undefined') ? '' : words[1];
+      data.cmd = action;
     }
   } else {
     data.cmd = '';
