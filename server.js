@@ -46,9 +46,11 @@ function queryDatabase(query, res) {
 
   // parse the typed in command into actions to perform and things to perform them on..
   data = parseCommand(data);
-
+  console.log(data);
+  console.log(data.cmd.toLowerCase());
+  
   // different commands use diferent collections..
-  if (data.cmd == 'list') {
+  if (data.cmd.toLowerCase() == 'list') {
     storage = db.collection('objects');
     thingToFind = {loc:data.target};
       // return an array of objects in the collection 'objects' that match the criteria..
@@ -82,9 +84,9 @@ function queryDatabase(query, res) {
 // convert the passed cmd in the json string into useful bits {'cmd':'creat a small white fluffy mouse','actor':'abdok'}
 function parseCommand(data) {
   if (data.cmd) {
-    var poss = data.cmd.indexOf('list');
+    var poss = data.cmd.toLowerCase().indexOf('list');
     if (poss > -1) {
-      data.target = data.cmd.replace('list ', '');
+      data.target = data.cmd.replace(/list /i, '').trim();
       data.cmd = 'list';
     }
   } else {

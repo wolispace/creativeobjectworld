@@ -23,3 +23,7 @@ github:
 
 https://github.com/wolispace/creativeobjectworld.git
 
+heroku:
+git@heroku.com:creativeobjectworld.git
+
+http://creativeobjectworld.herokuapp.com/
