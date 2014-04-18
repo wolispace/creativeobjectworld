@@ -264,3 +264,8 @@ function clearLog() {
   $('#log').html('');
   showTab('log');
 }
+
+function clickObj(id) {
+   $('#cmd').val('list '+id);
+   sendCmd($('#cmd').val());
+}

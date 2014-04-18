@@ -42,17 +42,18 @@ function queryDatabase(query, res) {
   var db = mongo.db('mongodb://cowuser:Remembering_cow_database@oceanic.mongohq.com:10064/creativeobjectworld', {w: -1}),
     data = JSON.parse(urlDecode(query)),
     storage,
-    thingToFind;
+    thingToFind,
+    fieldList = {id:1, loc:1, class:1, name:1, qty:1, extra:1, host:1};
 
   // parse the typed in command into actions to perform and things to perform them on..
   data = parseCommand(db, data);
 
   // different commands use diferent collections..
   if (data.cmd == 'list') {
-    storage = db.collection('objects');
+    storage = db.collection('old_objects');
     thingToFind = {loc:data.target};
       // return an array of objects in the collection 'objects' that match the criteria..
-      storage.find(thingToFind).toArray(
+      storage.find(thingToFind, fieldList).toArray(
         function(err, items) {
           if (err) {
             throw err;

@@ -15,7 +15,8 @@
       var d = (typeof this.data[objId] == 'undefined') ? {} : this.data[objId];
       d.id = objId;
       d.updated = (!d.updated) ? '' : d.updated;
-      d.name = (!d.name) ? 'transparent object' : d.name;
+      d.name = (!d.name) ? '' : d.name;
+      d.class = (!d.class) ? 'transparent object' : d.class;
       d.qty = (!d.qty) ? 1 : d.qty;
       d.colour = (!d.colour) ? '' : d.colour;
       d.extra = (!d.extra) ? '' : d.extra;
@@ -49,19 +50,18 @@
       }
       if (d.qty > 1) {
         var plurals = {'knife':'knives', 'sheep':'sheep', 'loaf':'loaves','mouse':'mice'};
-        var plural = plurals[d.name];
-        d.pluralName = (plural === undefined) ? d.name+'s' : plural;
+        var plural = plurals[d.class];
+        d.pluralName = (plural === undefined) ? d.class+'s' : plural;
       } else {
-        d.pluralName = d.name;
+        d.pluralName = d.class;
       }
       var inLoc = '';
       if (d.loc != 'void' && d.loc !== '') {
         var tmpObj = objStore.getObj(d.loc);
-        console.log(tmpObj.htmlLink);
         inLoc = d.relToLoc+' '+tmpObj.htmlLink;
       }
       d.inLoc = inLoc;
-      d.longName = d.qtyText+' '+d.extra+' '+d.pluralName;
+      d.longName = d.qtyText+' '+d.pluralName+' '+d.extra;
       d.htmlLink = '<a href="#" onclick="clickObj(\''+d.id+'\')" class="objLink '+d.colour+'">'+d.longName+'</a>';  
       
       return d;
