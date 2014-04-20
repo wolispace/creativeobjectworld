@@ -42,7 +42,8 @@ function queryDatabase(query, res) {
   var db = mongo.db( settings.mongoPath, {w: -1}),
     data = JSON.parse(urlDecode(query));
     
-
+  console.log({'orig request=':data});
+  
   // parse the typed in command into actions to perform and things to perform them on..
   parseCommand(db, data, res);
 }
@@ -61,7 +62,7 @@ function parseCommand(db, data, res) {
 
     // try to find an object named this in the player or the current location..
     var query = { "name": data.action, "loc": { "$in": [data.actor, data.actorLoc] }, "code" : { "$ne": null } },
-        fields = { "id": 1, "code": 1 };
+        fields = { "id": 1, "code": 1, "info": 1 };
 
     db_objects.find(query, fields).toArray(
       function(err, items) {
@@ -99,17 +100,19 @@ function parseCommand(db, data, res) {
 
 function processCmd(data, db, res)
 {
+  // we are always returning json..
+  res.writeHead(200, {'Content-Type': 'text/plain'});
   var db_objects = db.collection(settings.dbObjects);
-  //console.log({"data.process=":data.process});
+  //console.log({"data=":data});
   
   // DEBUG: data.process = {id,code} during testing..
   // this needs to be added to out command stack..
   
   
   // DEBUG: quick hack to show the results of a 'list' command in the browser..
-  if (data.action == 'look') {
+  if ((data.action == 'look') || (data.action == 'go')) {
     var query = {loc:data.words[1]},
-        fields = {id:1, loc:1, class:1, name:1, qty:1, extra:1, host:1};
+        fields = {id:1, loc:1, class:1, name:1, qty:1, extra:1, host:1, link: 1};
     // return an array of objects in the collection 'objects' that match the criteria..
     db_objects.find(query, fields).toArray(
       function(err, items) {
@@ -124,18 +127,36 @@ function processCmd(data, db, res)
         // ui wants {log:'msg to log'}..
         items = {look:objList, log: 'You look around'};
         var returnJson = JSON.stringify(items);
-        res.writeHead(200, {'Content-Type': 'text/plain'});
         return res.end(returnJson);
+      }
+    );
+  } else if (data.action == 'read') {
+    // show the info from the named object..
+    //TODO:  hack as we know the second word will be an ID..
+    var thisQuery = {'id': data.words[1]},
+        theseFields = {'id' : 1, 'info': 1, 'class': 1};
+    
+    db_objects.find(thisQuery, theseFields).toArray(
+      function(err, items) {
+        if (err) {
+          throw err;
+        }
+        if (typeof items[0] !== 'undefined') {
+          var returnJson = {};
+          var info = (typeof items[0].info == 'undefined') ? 'An ordinary '+items[0].class : items[0].info;
+          returnJson.read = JSON.stringify(info);
+          returnJson.log = 'You '+data.action;
+          return res.end(JSON.stringify( returnJson));
+        }
       }
     );
   } else {
     // show the code to be executed back to the user..
-    var tab = 'read';
-    var returnJson = {};
-    returnJson[tab] = JSON.stringify(data.process.code);
-    returnJson.log = 'You '+data.action;
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    return res.end(JSON.stringify( returnJson));
+    var tab = 'edit';
+    var returnJson2 = {};
+    returnJson2[tab] = JSON.stringify(data.process.code);
+    returnJson2.log = 'You '+data.action;
+    return res.end(JSON.stringify( returnJson2));
   }
 }  
 

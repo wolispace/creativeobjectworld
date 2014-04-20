@@ -163,7 +163,7 @@ function sendCmd(cmd) {
 
 function formatForReading(sourceText) {
   console.log(sourceText);
-  return '<code>'+sourceText.replace(/\\n/g, "<br/>")+'</code>';
+  return sourceText.replace(/\\n/g, "<br/>").replace(/\\r/g, "<br/>");
 }
 
 function getLogMessage(data) {
@@ -263,7 +263,7 @@ function hideLoginForm() {
 function clickTab( tab ) {
   // DEBUG:
   if( tab == 'read' ) {
-    sendCmd('read');
+    showTab('read');
   } else if( tab == 'look' ) {
     sendCmd('look '+settings.loc);
   } else {
@@ -291,7 +291,14 @@ function clearLog() {
 }
 
 function clickObj(id) {
-   $('#cmd').val('look '+id);
-   settings.loc = id;
-   sendCmd($('#cmd').val());
+  // TODO: correctly set the locaiton for this player at the right time (whem moving - from a response from the server thet they are there..)
+  var cmd = 'read';
+  var objOne = objStore.getObj(id);
+  if (objOne.link !== '') {
+    // TODO: should really be GO..
+    cmd = 'go';
+  }
+  console.log(objOne);
+  $('#cmd').val(cmd+' '+id);
+  sendCmd($('#cmd').val());
 }

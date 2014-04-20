@@ -18,6 +18,7 @@
       d.name = (!d.name) ? '' : d.name;
       d.class = (!d.class) ? 'transparent object' : d.class;
       d.qty = (!d.qty) ? 1 : d.qty;
+      d.link = (!d.link) ? '' : d.link;
       d.colour = (!d.colour) ? '' : d.colour;
       d.extra = (!d.extra) ? '' : d.extra;
       d.loc = (!d.loc) ? 'void' : d.loc;
@@ -62,7 +63,8 @@
       }
       d.inLoc = inLoc;
       d.longName = d.qtyText+' '+d.pluralName+' '+d.extra;
-      d.htmlLink = '<a href="#" onclick="clickObj(\''+d.id+'\')" class="objLink '+d.colour+'">'+d.longName+'</a>';  
+      var isDoorway = (d.link !== '') ? 'doorway' : '';
+      d.htmlLink = '<a href="#" onclick="clickObj(\''+d.id+'\')" class="objLink '+isDoorway+' '+d.colour+'">'+d.longName+'</a>';  
       
       return d;
     };
