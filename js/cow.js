@@ -1,5 +1,6 @@
 //var cow_global = {};
-var objStore = new ObjectCache();
+var objStore = new ObjectCache(),
+    settings = {loc: 1};
 
 $(document).ready( function() {
   initPage();
@@ -119,41 +120,65 @@ function sendCmd(cmd) {
     debug( 'read['+jsonData.read+']' );
     debug( 'edit['+jsonData.edit+']' );
     debug( 'error['+jsonData.error+']' );
+    var msg = '';
 
     if( handleResultsOk( jsonData ) ) {
       var tabShown = false;
-      if( jsonData.log !== '' ) {
-        objStore.data = jsonData.log; 
-        var msg = '';
-        for (var id in jsonData.log) { 
-          var objOne = objStore.getObj(id);
-          msg += objOne.htmlLink+' '+objOne.inLoc+'<br/>';
-        }
+      if (jsonData.log !== undefined) {
+        // TODO: a log msg will have params that need converting into the nice clickable objects..
+        msg = jsonData.log+"<br/>";
         addMessage( msg );
         highlightTab('log');
       }
-     if( jsonData.read !== undefined ) {
-       showTab('read');
-       $('#read').html( jsonData.read );
-       tabShown = true;
-     }
-     if( jsonData.look !== undefined ) {
-       $('#look').html( jsonData.look );
-       showTab('look');
-       tabShown = true;
-     }
-     if( jsonData.edit !== undefined ) {
-       $('#edit_textarea').html( jsonData.edit ).change();
-       showTab('edit');
-       tabShown = true;
-     }
-     // always show the log if no other tab was specified..
-     if(!tabShown) {
-       showTab('log');
-     }
-   }
+      if( jsonData.read !== undefined ) {
+        showTab('read');
+        $('#read').html( formatForReading(jsonData.read) );
+        tabShown = true;
+      }
+      if( jsonData.look !== undefined ) {
+        objStore.data = jsonData.look; 
+        msg = 'You look around and see ';
+        for (var id in jsonData.look) { 
+          var objOne = objStore.getObj(id);
+          msg += objOne.htmlLink+', ';
+          // 
+        }
+        $('#look').html( msg );
+        showTab('look');
+        tabShown = true;
+      }
+      if( jsonData.edit !== undefined ) {
+        $('#edit_textarea').html( jsonData.edit ).change();
+        showTab('edit');
+        tabShown = true;
+      }
+      // always show the log if no other tab was specified..
+      if(!tabShown) {
+        showTab('log');
+      }
+    }
   });
 
+}
+
+function formatForReading(sourceText) {
+  console.log(sourceText);
+  return '<code>'+sourceText.replace(/\\n/g, "<br/>")+'</code>';
+}
+
+function getLogMessage(data) {
+  var msg = '';
+  console.log(data);
+  if (typeof data == Object ) {
+    objStore.data = data; 
+    for (var id in data) { 
+      var objOne = objStore.getObj(id);
+      msg += objOne.htmlLink+' '+objOne.inLoc+'<br/>';
+    }
+  } else {
+    msg = data;
+  }
+  return msg;
 }
 
 // send json and receive json..
@@ -240,7 +265,7 @@ function clickTab( tab ) {
   if( tab == 'read' ) {
     sendCmd('read');
   } else if( tab == 'look' ) {
-    sendCmd('look');
+    sendCmd('look '+settings.loc);
   } else {
     showTab( tab );
   }
@@ -266,6 +291,7 @@ function clearLog() {
 }
 
 function clickObj(id) {
-   $('#cmd').val('list '+id);
+   $('#cmd').val('look '+id);
+   settings.loc = id;
    sendCmd($('#cmd').val());
 }
