@@ -4,6 +4,10 @@ var db = mongo.db('mongodb://cowuser:Remembering_cow_database@oceanic.mongohq.co
 
 var command = 'list';
 
+var processor = require('./processor.js');
+
+processor.processBlocks(db, "##this say this is a test;go home;msg another test;blah blah");
+
 var storage = db.collection('objects');
 var thingToFind = {$and: [
       { $or: [{ class: 'command' }, { class: 'action'}] },
@@ -30,6 +34,5 @@ function packageItems(items) {
   }
   return objList;  
 }
-
 
     

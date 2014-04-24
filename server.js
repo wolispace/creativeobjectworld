@@ -21,9 +21,7 @@ function handler (req, res) {
 }
 
 function serverStaticFile(fileName, res) {
-  //console.log('Request for : '+fileName);
   fileName = (fileName === '/') ? '/index.html' : fileName;
-  //console.log('Showing '+settings.root+fileName);
   fs.readFile(settings.root+fileName,
     function (err, data) {
       if (err) {
@@ -110,10 +108,18 @@ function processCmd(data, db, res)
   
   
   // DEBUG: quick hack to show the results of a 'list' command in the browser..
-  if ((data.action == 'look') || (data.action == 'go')) {
-    var query = {loc:data.words[1]},
+  if ((data.action == 'login')) {
+    // TODO: get the objects location.
+    var items = {player:{id:'87', loc:'1'}, log: 'You wake up'};
+    var returnJson = JSON.stringify(items);
+    return res.end(returnJson);
+    
+  } else if ((data.action == 'look') || (data.action == 'go')) {
+    var lookLocation = (data.words[1] == 'undefined') ? data.loc : data.words[1];
+    var query = {loc:lookLocation},
         fields = {id:1, loc:1, class:1, name:1, qty:1, extra:1, host:1, link: 1};
     // return an array of objects in the collection 'objects' that match the criteria..
+    console.log(query);
     db_objects.find(query, fields).toArray(
       function(err, items) {
         if (err) {
@@ -125,7 +131,7 @@ function processCmd(data, db, res)
         }
         // the end of our processing now return something to the browser..
         // ui wants {log:'msg to log'}..
-        items = {look:objList, log: 'You look around'};
+        items = {player:{id:'87',loc:lookLocation},look:objList, log: 'You look around'};
         var returnJson = JSON.stringify(items);
         return res.end(returnJson);
       }

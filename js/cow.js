@@ -1,6 +1,6 @@
 //var cow_global = {};
 var objStore = new ObjectCache(),
-    settings = {loc: 1};
+    settings = {player:{id:'unknown', loc:'1'}};
 
 $(document).ready( function() {
   initPage();
@@ -84,7 +84,8 @@ function login() {
    $('#pwd').val('');
    //console.log('Got back '+jsonData);
    if( handleResultsOk( jsonData ) ) {
-     addMessage( 'Logged in as '+jsonData.name );
+     addMessage( jsonData.log );
+     settings.player = jsonData.player;
      hideLoginForm();
      returnResult = true;
    } else {
@@ -111,19 +112,19 @@ function logoff() {
 }
 
 function sendCmd(cmd) {
-  var urlParams = {};
+  var urlParams = settings.player;
   urlParams.cmd = cmd;
   jsonRequest( JSON.stringify(urlParams), function( jsonData ) {
 
-    debug( 'log:['+jsonData.log+']' );
-    debug( 'look['+jsonData.look+']' );
-    debug( 'read['+jsonData.read+']' );
-    debug( 'edit['+jsonData.edit+']' );
-    debug( 'error['+jsonData.error+']' );
+    //debug( 'log:['+jsonData.log+']' );
     var msg = '';
 
     if( handleResultsOk( jsonData ) ) {
       var tabShown = false;
+      // update the playser info.. id and location.
+      if (typeof jsonData.player !== 'undefined') {
+        settings.player = jsonData.player;
+      }
       if (jsonData.log !== undefined) {
         // TODO: a log msg will have params that need converting into the nice clickable objects..
         msg = jsonData.log+"<br/>";
@@ -183,40 +184,16 @@ function getLogMessage(data) {
 
 // send json and receive json..
 function jsonRequest(urlParams, successFunction) {
-  if( settings.noServer ) {
-
-    // faking a json response..
-    console.log( urlParams );
-    var jsonData = {};
-    if( urlParams.c == 'look' ) {
-      jsonData.log = "you look around.";
-      jsonData.look = "You are in a large swamp.";
-    }
-    else if( urlParams.c == 'read' ) {
-      jsonData.log = "you read a book.";
-      jsonData.read = "It was a dark and stormy night.";
-    }
-    else if( urlParams.c == 'edit' ) {
-      jsonData.log = "you look around.";
-      jsonData.edit = "if target of push then ##mebushed\n##mepushed\nsay 'I was pushed'";
-    }
-    else {
-      jsonData.log = "You say "+urlParams.c;
-    }
-    successFunction( jsonData );
-
-  } else {
-    $.getJSON( settings.url, urlParams )
-    .done( successFunction )
-    .fail(function( jqxhr, textStatus, error ) {
-      console.log( jqxhr );
-      console.log( textStatus );
-      console.log( error );
-      var err = textStatus + ', ' + error;
-      addMessage( "Request Failed: " + err);
-      addMessage( jqxhr.responseText );
-    });
-  }
+  $.getJSON( settings.url, urlParams )
+  .done( successFunction )
+  .fail(function( jqxhr, textStatus, error ) {
+    console.log( jqxhr );
+    console.log( textStatus );
+    console.log( error );
+    var err = textStatus + ', ' + error;
+    addMessage( "Request Failed: " + err);
+    addMessage( jqxhr.responseText );
+  });
 }
 
 // if a sysMessage is defined the process it then if received json had an error defined then show it and return false to its not considered a success..
