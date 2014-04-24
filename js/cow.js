@@ -90,7 +90,6 @@ function login() {
      returnResult = true;
    } else {
      addMessage( 'got an error');
-     // addMessage( JSON.stringify(jsonData) ); // needs json2.js
      highlightTab('log');
    }
  });
