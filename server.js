@@ -22,7 +22,7 @@ function handler (req, res) {
 }
 
 function serverStaticFile(fileName, res) {
-  fileName = (fileName === '/') ? '/index.html' : fileName;
+  fileName = (fileName === '/') ? '/new_ui.html' : fileName;
   fs.readFile(settings.root+fileName,
     function (err, data) {
       if (err) {
@@ -151,7 +151,7 @@ function processCmd(data, db, res)
         }
         // the end of our processing now return something to the browser..
         // ui wants {log:'msg to log'}..
-        items = {player:{id:'87',loc:lookLocation},look:objList, log: 'You look around'};
+        items = {player:{id:'87',loc:lookLocation},look:objList}; // , log: 'You look around'
         var returnJson = JSON.stringify(items);
         return res.end(returnJson);
       }
@@ -180,9 +180,9 @@ function processCmd(data, db, res)
     // show the code to be executed back to the user..
     processor.processBlocks(db, "##this say this is a test;go home;msg another test;blah blah");
 
-    var tab = 'edit';
+    //var tab = 'edit';
     var returnJson2 = {};
-    returnJson2[tab] = JSON.stringify(data.process.code);
+    //returnJson2[tab] = JSON.stringify(data.process.code);
     returnJson2.log = 'You '+data.action;
     return res.end(JSON.stringify( returnJson2));
   }
