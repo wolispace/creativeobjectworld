@@ -4,7 +4,8 @@ var app = require('http').createServer(handler),
     fs = require('fs'),
     url = require('url'),
     mongo = require('mongoskin'),
-    path = require('path');
+    path = require('path'),
+    processor = require('./processor.js');
     
 
 app.listen(settings.port);
@@ -46,7 +47,9 @@ function queryDatabase(query, res) {
   parseCommand(db, data, res);
 }
 
-// convert the passed cmd in the json string into useful bits {'cmd':'create a small white fluffy mouse','actor':'abdok'}
+// convert the passed cmd in the json string into useful bits
+// {'cmd':'create a small white fluffy mouse',
+//  'player':{id:'87',loc:'1'}}
 function parseCommand(db, data, res) {
   var db_objects = db.collection(settings.dbObjects);
   if (data.cmd) {
@@ -94,6 +97,23 @@ function parseCommand(db, data, res) {
     );
   }
   // no cmd so nothing returned..
+}
+
+// add the command to the list of commands to be processed..
+function addCommand(data, db, res)
+{
+  // data.process = {id, code}
+  // data.player = {id, loc}
+  // data.target = {id}
+  // data.second = {id}
+  
+  var db_commands = db.collection(settings.dbCommands);
+  db_commands.insert(
+    data, function(err, result) {
+    if (err || !result) {
+      throw err;
+    }  
+  });
 }
 
 function processCmd(data, db, res)
@@ -158,6 +178,8 @@ function processCmd(data, db, res)
     );
   } else {
     // show the code to be executed back to the user..
+    processor.processBlocks(db, "##this say this is a test;go home;msg another test;blah blah");
+
     var tab = 'edit';
     var returnJson2 = {};
     returnJson2[tab] = JSON.stringify(data.process.code);

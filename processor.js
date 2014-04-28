@@ -29,6 +29,8 @@ function processStatement(statement) {
   var words = statement.split(' ');
   if (words[0] == 'msg') {
     doMsg(words);
+  } else if (words[0] == 'say') {
+    doSay(words);
   } else if (words[0] == 'go') {
     doGo(words);    
   } else {
