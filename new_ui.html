@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+   <title>Test UI</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="css/cow.css" />
+  </head>
+		<style>
+			html {
+				font-size: 100%;
+			}
+			
+			body,
+			input,
+			select,
+			textarea,
+			button {
+				font-size: 1em;
+				font-family: sans-serif;
+			}
+
+   body {
+			 margin:0; 
+			}
+			
+		 .card {
+			 box-shadow: 0 0 3px #888888;
+			 margin:5px;
+			 padding:5px;
+       background:white;
+ 			 overflow-y: scroll;
+			}
+
+			#userInput {
+			 overflow-y:hidden;
+			}
+		</style>
+ <body>
+   <div id="content">
+    <div id="log" class="card expandable">
+				 <div >You wake up</div>
+				 <div >You look around</div>
+				 <div >You look around</div>
+				 <div >You look around</div>
+				 <div >You look around</div>
+				 <div >You look around</div>
+				 <div >You look around</div>
+				 <div >You look around</div>
+    </div>
+    <div id="look" class="card expandable">
+     <div>Looking around you can see...<br/>
+					A something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something and a something </div>
+				</div>
+    <div id="edit" class="card expandable">
+     <div id="editForm" style="display:none">
+      <label for="edit_textarea" >Edit:</label>
+      <textarea id="edit_textarea"  ></textarea>
+      <button >Cancel</button>
+      <button >Save</button>
+     </div>
+    </div>
+    <div id="userInput" class="card">
+     <input type="text" id="cmd" placeholder="Enter your command here"/>
+					<button id="goButton">Go</button>
+    </div>
+   </div>
+
+			<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+   <script src='settings.js' ></script>
+   <script src='app.js' ></script>
+  
+		<script>
+   var objStore = new ObjectCache(),
+     settings = {player:{id:'unknown', loc:'1'}};
+    
+			$(document).ready( function() {
+ 				initPage();
+			});
+
+			// what to do when the first page loads and things need initialising..
+			function initPage() {
+     $(window).bind( 'resize', function(e){ 
+       $('#userInput').trigger('click');
+       //console.log("orentation "+$(window).height());  
+     });
+
+     function smallHeight() {
+       return 20;
+				 }
+					
+				 function largeHeight() {
+				   var cardMargin = 20;
+       var returnValue = $(window).height() - (smallHeight() * 3) - (cardMargin * 4);
+       return returnValue;
+				 }
+					
+					// only way I can get the cards animating at the same time..
+					$('#log').click( function() {
+       if ($('#log').height() != largeHeight()) {
+  			 			$('#log').animate({height: largeHeight()}, 'fast');
+  					  $('#look').animate({height: smallHeight()}, 'fast');
+  				 		$('#edit').animate({height: smallHeight()}, 'fast');
+  					}		
+     });
+
+					$('#look').click( function() {
+       if ($('#look').height() != largeHeight()) {
+					  		$('#log').animate({height: smallHeight()}, 'fast');
+						  	$('#look').animate({height: largeHeight()}, 'fast');
+						  	$('#edit').animate({height: smallHeight()}, 'fast');
+						 }		
+     });
+
+					$('#edit').click( function() {
+       if ($('#edit').height() != largeHeight()) {
+							  $('#log').animate({height: smallHeight()}, 'fast');
+							  $('#look').animate({height: smallHeight()}, 'fast');
+							  $('#edit').animate({height: largeHeight()}, 'fast');
+						 }		
+     });
+					
+					$('#userInput').click( function() {
+       $('#cmd').focus();
+         if ($('#log').height() != smallHeight()) {
+           $('#log').height(largeHeight());
+         }
+         if ($('#look').height() != smallHeight()) {
+           $('#look').height(largeHeight());
+         }
+         if ($('#edit').height() != smallHeight()) {
+           $('#edit').height(largeHeight());
+         }
+     });
+
+/*			Failed to animate at the same time.. does a collapse then expand inducing sea-sickness..		
+					$('.expandable').on('click', function() { 
+							if ($(this).height() != largeHeight()) {
+  							$('.expandable').animate({height: smallHeight()}, 'fast');
+									$(this).animate({height:largeHeight()}, 'fast');
+							}		
+					});
+*/
+					$('#log').trigger('click');
+					
+
+					
+}
+
+//------- from cow.js to handle sending anc recieving messages..
+
+$('#cmd').keydown( function(e) { enterCmd(e); } );
+$('#goButton').click( function(e) { enterCmd(e); } );
+
+function enterCmd(e) {
+  var cmd = $('#cmd').val();
+  $('#cmd').focus();
+  if (e.keyCode == 13 && cmd !== '' ) {
+    sendCmd($('#cmd').val());
+    $('#cmd').val('');
+  }
+}
+
+
+function sendCmd(cmd) {
+  var urlParams = settings.player;
+  urlParams.cmd = cmd;
+  jsonRequest( JSON.stringify(urlParams), function( jsonData ) {
+
+    //debug( 'log:['+jsonData.log+']' );
+    var msg = '';
+
+    if( handleResultsOk( jsonData ) ) {
+      // update the playser info.. id and location.
+      if (typeof jsonData.player !== 'undefined') {
+        settings.player = jsonData.player;
+      }
+      if (jsonData.log !== undefined) {
+        // TODO: a log msg will have params that need converting into the nice clickable objects..
+        msg = jsonData.log+"<br/>";
+        addMessage( msg );
+        $('#log').trigger('click');
+      }
+      if( jsonData.look !== undefined ) {
+        objStore.data = jsonData.look; 
+        msg = 'You look around and see ';
+        for (var id in jsonData.look) { 
+          var objOne = objStore.getObj(id);
+          msg += objOne.htmlLink+', ';
+          // 
+        }
+        $('#look').html( msg );
+        $('#look').trigger('click');
+      }
+      if( jsonData.edit !== undefined ) {
+        $('#edit_textarea').html( jsonData.edit ).change();
+        $('#edit').trigger('click');
+      }
+    }
+  });
+
+}
+
+function formatForReading(sourceText) {
+  console.log(sourceText);
+  return sourceText.replace(/\\n/g, "<br/>").replace(/\\r/g, "<br/>");
+}
+
+// send json and receive json..
+function jsonRequest(urlParams, successFunction) {
+  $.getJSON( settings.url, urlParams )
+  .done( successFunction )
+  .fail(function( jqxhr, textStatus, error ) {
+    console.log( jqxhr );
+    console.log( textStatus );
+    console.log( error );
+    var err = textStatus + ', ' + error;
+    addMessage( "Request Failed: " + err);
+    addMessage( jqxhr.responseText );
+  });
+}
+
+// if a sysMessage is defined the process it then if received json had an error defined then show it and return false to its not considered a success..
+function handleResultsOk( jsonData ) {
+  var returnResult = true;
+  if( jsonData.sys ) {
+    addMessage( 'System msg: '+jsonData.sys );
+  }
+  if( jsonData.error ) {
+    addMessage( 'Failed to login because: '+jsonData.error );
+    returnResult = false;
+  }
+  return returnResult;
+}
+
+function addMessage( msg ) {
+  $('#log').append( "<div class='log_entry'>"+msg+"</div>\n" );
+}
+			
+function clickObj(id) {
+  // TODO: correctly set the locaiton for this player at the right time (whem moving - from a response from the server thet they are there..)
+  var cmd = 'read';
+  var objOne = objStore.getObj(id);
+  if (objOne.link !== '') {
+    // TODO: should really be GO..
+    cmd = 'go';
+  }
+  //console.log(objOne);
+  $('#cmd').val(cmd+' '+id);
+  sendCmd($('#cmd').val());
+}
+// ------ end from cow.js
+
+
+			
+		</script>
+ </body>
+</html>
