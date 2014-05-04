@@ -178,7 +178,7 @@ function processCmd(data, db, res)
     );
   } else {
     // show the code to be executed back to the user..
-    processor.processBlocks(db, "##this say this is a test;go home;msg another test;blah blah");
+    processor.processBlocks(settings, db, data);
 
     //var tab = 'edit';
     var returnJson2 = {};

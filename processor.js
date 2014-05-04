@@ -15,47 +15,121 @@ $vol = (softly,loudly,slowly,quickly);
 print "[$actor] $sound $vol";
 ---
 
+All blocks are added to the blockSoup and called on as needed.db
 */
-var db;
+var db,
+    data,
+    blockSoup,
+    settings;
 
-function processBlock(block) {
-  var statementList = block.split(';');
-  statementList.forEach(function(statement) {
+// process one block by its name. the first is always known as __start..
+function processBlock(blockName) {
+  log(blockName,'blockName');
+  var statementList = blockSoup[blockName].split(';');
+    statementList.forEach(function(statement) {
     processStatement(statement);  
-  });  
+  });
 }
 
 function processStatement(statement) {
-  var words = statement.split(' ');
-  if (words[0] == 'msg') {
+  var words = statement.trim().split(/\r| /);
+  var cowmand = words.shift();
+
+  if (cowmand === '') {
+    // ignore blanks..
+  } else if (cowmand == 'if') {
+    doIf(words);
+  } else if (cowmand == 'get') {
+    doGet(words);
+  } else if (cowmand == 'msg') {
     doMsg(words);
-  } else if (words[0] == 'say') {
+  } else if (cowmand == 'say') {
     doSay(words);
-  } else if (words[0] == 'go') {
+  } else if (cowmand == 'go') {
     doGo(words);    
   } else {
-    doSay(words);
+    console.log("? did not know what to do with "+cowmand);
   }
 } 
 
+// based on the value of the condition do another block..
+function doIf(words) {
+ 
+  // DEBUG: fake it..
+  var nextBlock = 'sayit';
+  processBlock(nextBlock);
+}
+
+// try to locate the object/s in the location and assign it to the target or second..
+function doGet(words) {
+  data.target = '99';
+}
+
+
+// shortcut to adding a message.. some values are pre-defined..
 function doSay(words) {
-  console.log("Actor says "+words.join(' '));  
+  // TODO set some things like the current location..
+  doMsg(words); 
 }
 
+// add a message to the messages colection with a timestamp..
 function doMsg(words) {
-  console.log("adding msg to stack of "+words.join(' '));  
+  var db_messages = db.collection('messages');
+  data.words.shift();
+  var msgPrefix = '[$actor] says';
+  var thisMsg = msgPrefix+' '+data.words.join(' ');
+  
+  // parse the settings like the $loc from the words.. 
+  // DEBUG: fake it..
+  var newMsg = {actor:87, loc:1, msg:thisMsg};
+
+  db_messages.insert(newMsg, 
+    function(err, result) {
+    if (err) {
+      throw err;
+    }
+    if (result) {
+      log(newMsg, 'ADDED newMsg');
+    }
+  });
 }
 
+// change the player's location..
 function doGo(words) {
-  console.log("changing locaiton to "+words.join(' '));
+  console.log("changing location to "+words.join(' '));
 }
 
-exports.processBlocks = function(thisDb, sourceCode) {
+// all purpose variable logger..
+function log(object, msg) {
+  console.log('='+msg+'=');
+  console.log(object);
+}
+
+// build our block soup from which we can pluck a block and process it based on its name..
+// more blocks can be added to the soup using include etc..
+function buildBlockSoup(thisCode) {
+  var returnResult = {},
+      theseBlocks = thisCode.replace(/\\r/,'').split('##');
+  
+  theseBlocks.forEach(function(block) {
+    var blockHead = block.split(':');
+    if (blockHead[1]) {
+      returnResult[blockHead[0]] = blockHead[1];
+    }
+  });
+  return returnResult;
+}
+
+exports.processBlocks = function(theseSettings, thisDb, thisData) {
+  settings = theseSettings;
   db = thisDb;
-  sourceCode = '##__start'+sourceCode;
-  var blockList = sourceCode.split('##');
-  blockList.forEach(function(block) {
-    processBlock(block);
-  });  
+  data = thisData;
+  if (data.process.code) {
+    blockSoup = buildBlockSoup('##__start:'+data.process.code);
+    // always start processing the first block that is never named in the code..
+    processBlock('__start');
+  } else {
+      console.log("No code to process");
+  }    
 };
 
