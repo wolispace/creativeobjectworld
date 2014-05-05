@@ -22,7 +22,7 @@ function handler (req, res) {
 }
 
 function serverStaticFile(fileName, res) {
-  fileName = (fileName === '/') ? '/new_ui.html' : fileName;
+  fileName = (fileName === '/') ? '/index.html' : fileName;
   fs.readFile(settings.root+fileName,
     function (err, data) {
       if (err) {

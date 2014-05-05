@@ -1,19 +1,59 @@
-/* css for cow_ui.html a jQuery mobile site */
+/* css for cow mobile */
 
 h1 {
   text-shadow: 0 0 10px dodgerblue;
 }
 
+html {
+	font-size: 100%;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+	font-size: 1em;
+	font-family: sans-serif;
+}
+
+body {
+ margin:0; 
+	background:#DDDDDD;
+}
+
+.card {
+ box-shadow: 0 0 3px #888888;
+ margin:5px;
+ padding:5px;
+ background:#EEEEEE;
+  overflow-y: scroll;
+}
+
+#cardHolder {
+ overflow-x:hidden; 
+}
+
+#edit {
+		position:absolute;
+		right:0;
+		top:0;
+		width:30px;
+		overflow-x:hidden;
+		overflow-y:hidden;
+}
+
+#editContent {
+  width:500px;
+}		
+
+#userInput {
+ overflow-y:hidden;
+}
+
 #cmd {
- margin-left:2.4em;
- width:70%;
+  margin-left:5px;
 }
-
-.setting {
- margin-bottom:1em;
- border-bottom:1px solid silver;
-}
-
 
 a {
  text-decoration:none;

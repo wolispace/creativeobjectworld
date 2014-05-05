@@ -2,90 +2,42 @@
 <html>
  <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-   <title>Test jQuery Mobile</title>
+   <title>Test UI</title>
    <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
    <link rel="stylesheet" href="css/cow.css" />
-
   </head>
  <body>
-  <div data-role="page" data-theme="a">
-
-   <div data-role="panel" id="settings" data-position-fixed="true" data-theme="a">
-    <div class="setting"><a href="" id="logoff_button">Logoff</a></div>
-    <div class="setting"><a href="" id="clear_log_button">clear Log</a></div>
-    <div class="setting"><a href="" id="debug_button">Debug</a></div>
-   </div><!-- /panel -->
-
-   <div data-role="panel" id="debug" data-position-fixed="true"
-        data-position="right" data-theme="a" data-mini="true">
-   </div><!-- /panel -->
-
-   <div data-role="header" data-id="head1" data-position="fixed" >
-    <a href="#settings" data-icon="bars" class="ui-btn-left"
-       id="settings_button"
-       data-iconpos="notext"
-       data-theme="a"
-       data-iconshadow="false"
-       data-shadow="false"
-       style="display:none"></a>
-
-    <h1 id="welcome_header">COW</h1>
-
-    <label for="cmd" class="ui-hidden-accessible">Cmd:</label>
-    <input type="text" id="cmd" placeholder="Type your command here" data-mini="true"
-           style="display:none" data-theme="a" ></input>
-
-    <a href="" id="cmd_button" data-icon="arrow-r" class="ui-btn-right"
-       data-iconpos="notext"
-       data-theme="a"
-       data-iconshadow="false"
-       data-shadow="false"
-       style="display:none"></a>
-   </div><!-- header -->
-
-
-   <div data-role="content">
-    <div id="log" class="tabs" style="display:none">
+   <div id="content">
+			 <div id="cardHolder">
+					<div id="log" class="card expandable">
+						<div >You wake up</div>
+					</div>
+					<div id="look" class="card expandable">
+						<div>Looking around you can see...<br/>
+						</div>
+					</div>
+				</div>	
+    <div id="edit" class="card" >
+     <div id="editContent">
+						You read something here...
+						<div id="editForm" style="display:none">
+							<label for="edit_textarea" >Edit:</label>
+							<textarea id="edit_textarea"  ></textarea>
+							<button >Cancel</button>
+							<button >Save</button>
+						</div>
+					</div>	
     </div>
-    <div id="look" class="tabs" style="display:none">
+    <div id="userInput" class="">
+     <input type="text" id="cmd" placeholder="Enter your command here"/>
+					<button id="goButton">Go</button>
     </div>
-    <div id="read"  class="tabs" style="display:none">
-    </div>
-    <div id="edit"  class="tabs" style="display:none">
-     <label for="edit_textarea" class="ui-hidden-accessible">Edit:</label>
-     <textarea id="edit_textarea" rows="40" data-mini="true" ></textarea>
-     <button data-inline="true" data-mini="true">Cancel</button>
-     <button data-inline="true" data-mini="true">Save</button>
-    </div>
+   </div>
 
+			<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+   <script src='settings.js' ></script>
+   <script src='app.js' ></script>
+   <script src='js/cow.js' ></script>
 
-
-    <div id="login">
-     <input type="text" id="name" placeholder="User name or email" />
-     <input type="password" id="pwd" placeholder="Password" />
-     <button id="login_button">Login</button>
-    </div>
-
-   </div><!-- content -->
-
-    <div data-role="footer" data-id="foo1" data-position="fixed"
-    data-transition="slide" >
-     <div data-role="navbar">
-       <ul>
-         <li><a href="#" id="tab_log"  class="tab_buttons" data-theme="a">log</a></li>
-         <li><a href="#" id="tab_look" class="tab_buttons" data-theme="a">look</a></li>
-         <li><a href="#" id="tab_read" class="tab_buttons" data-theme="a">read</a></li>
-         <li><a href="#" id="tab_edit" class="tab_buttons" data-theme="a">edit</a></li>
-       </ul>
-     </div><!-- /navbar -->
-   </div><!-- /footer -->
-  </div><!-- page -->
-  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
-  <script src="https://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
-  <script src='settings.js' ></script>
-  <script src='app.js' ></script>
-  <script src='js/cow.js' ></script>
  </body>
 </html>

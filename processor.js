@@ -25,10 +25,12 @@ var db,
 // process one block by its name. the first is always known as __start..
 function processBlock(blockName) {
   log(blockName,'blockName');
-  var statementList = blockSoup[blockName].split(';');
-    statementList.forEach(function(statement) {
-    processStatement(statement);  
-  });
+  if (blockSoup[blockName]) {
+    var statementList = blockSoup[blockName].split(';');
+      statementList.forEach(function(statement) {
+      processStatement(statement);  
+    });
+  }
 }
 
 function processStatement(statement) {
