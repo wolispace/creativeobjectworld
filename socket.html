@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+   <title>Test sockets</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="css/cow.css" />
+  </head>
+ <body>
+  <input type="text" id="inputMsg" />
+  <input type="button" value="Go" id="go" />
+  <input type="button" value="Go2" id="go2" />
+  <div id="outputMsg" >output goes here</div>
+ </body>
+ <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+ <script src="/socket.io/socket.io.js"></script>
+ <!-- <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script> -->
+ <script>
+
+	$(document).ready( function() {
+ 		initPage();
+	});
+
+	// what to do when the first page loads and things need initialising..
+	function initPage() {
+    connectToServer();
+	}  
+	  
+  // Initialize the socket & handlers
+  var connectToServer = function() {
+    if (io) {
+      var socket = io.connect('https://creativeobjectworld-c9-wolispace.c9.io');
+      socket.on('message', function (data) {
+        console.log("=got msg=");
+        console.log(data);
+        $('#outputMsg').append('<br/>'+data.my);
+      });
+      
+      socket.on('blip', function (data) {
+        console.log("=got blip=");
+        console.log(data);
+        $('#outputMsg').append(JSON.stringify(data));
+      });  
+      
+       $('#go').click( function() {
+        socket.emit('cmd', { my: $('#inputMsg').val() });
+       });
+       
+      $('#go2').click( function() {
+        socket.emit('go2', { my: $('#inputMsg').val() });
+       });
+  
+    } else {
+      alert('failed to get started');
+    }
+  }	
+	/* console.log(JSON.stringify({a:1}));
+ 
+    var warbleSocket = new SockJS('https://cow-c9-wolispace.c9.io:5555');
+ 
+ 
+    warbleSocket.onopen = function() {
+      clearInterval(connectRetry);
+      $('.connect-status')
+        .removeClass('disconnected')
+        .addClass('connected')
+        .text('Connected');
+    };
+ 
+    warbleSocket.onmessage = function(e) {
+      $('#warble-msg').text(e.data);
+    };
+ 
+    warbleSocket.onclose = function() {
+      clearInterval(connectRetry);
+      connectRetry = setInterval(connectToServer, 1000);
+      $('.connect-status')
+        .removeClass('connected')
+        .addClass('disconnected')
+        .text('Disconnected');
+    };
+ 
+    // Connect the text field to the socket
+    $('.msg-sender').off('input').on('input', function() {
+      warbleSocket.send($('.msg-sender input').val());
+    });
+  };
+ 
+  var connectRetry = setInterval(connectToServer, 1000);	  
+*/
+	  
+                           
+
+
+ </script>
+</html> 

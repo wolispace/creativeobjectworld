@@ -1,6 +1,8 @@
 var settings = require('./settings.js');
 
 var app = require('http').createServer(handler),
+    sockjs = require('sockjs'),
+    socketio = require('socket.io'),
     fs = require('fs'),
     url = require('url'),
     mongo = require('mongoskin'),
@@ -9,6 +11,7 @@ var app = require('http').createServer(handler),
     
 
 app.listen(settings.port);
+var io = socketio.listen(app);
 // kill $(ps ax | grep '[j]s' | awk '{ print $1 }')
 
 // handle requests..
@@ -35,6 +38,22 @@ function serverStaticFile(fileName, res) {
     }
   );
 }
+
+
+io.sockets.on('connection', function (socket) {
+  io.sockets.emit('message', { msg: 'server joined as id='+socket.id });
+  socket.send("your ID is "+socket.id, function() { console.log("send sent"); });
+  socket.on('cmd', function (data) {
+    console.log("=got data=");
+    io.sockets.emit('message', data, function() { console.log("message sent"); });
+    console.log(data);
+  });
+  socket.on('go2', function (data) {
+    console.log("=got post=");
+    io.sockets.emit('blip', data);
+    console.log(data);
+  });
+});
 
 function queryDatabase(query, res) {
   // db will be the connection to the mongoDB hosted on mongoHQ..
