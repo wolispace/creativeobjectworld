@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+   <title>Test UI</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="css/cow.css" />
+  </head>
+ <body>
+   <div id="content">
+			 <div id="cardHolder">
+					<div id="log" class="card expandable">
+						<div >You wake up</div>
+					</div>
+					<div id="look" class="card expandable">
+						<div>Looking around you can see...<br/>
+						</div>
+					</div>
+				</div>	
+    <div id="edit" class="card" >
+     <div id="editContent">
+						You read something here...
+						<div id="editForm" style="display:none">
+							<label for="edit_textarea" >Edit:</label>
+							<textarea id="edit_textarea"  ></textarea>
+							<button >Cancel</button>
+							<button >Save</button>
+						</div>
+					</div>	
+    </div>
+    <div id="userInput" class="">
+     <input type="text" id="cmd" placeholder="Enter your command here"/>
+					<button id="goButton">Go</button>
+    </div>
+   </div>
+
+	 <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+	 <script src="/socket.io/socket.io.js"></script>
+   <script src='settings.js' ></script>
+   <script src='app.js' ></script>
+   <script src='js/cow_sockets.js' ></script>
+
+ </body>
+</html>
