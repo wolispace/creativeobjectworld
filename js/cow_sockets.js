@@ -1,104 +1,104 @@
    var objStore = new ObjectCache(),
      settings = {player:{id:'unknown', loc:'1'}},
-					smallEditWidth = 30,
-					cardPeek = 60,
-					padding = 15;
+          smallEditWidth = 30,
+          cardPeek = 60,
+          padding = 15;
     
-			$(document).ready( function() {
- 				initPage();
-			});
+      $(document).ready( function() {
+        initPage();
+      });
 
-			// what to do when the first page loads and things need initialising..
-			function initPage() {
+      // what to do when the first page loads and things need initialising..
+      function initPage() {
      smallEditWidth = $('#edit').width();
-					
+          
      $(window).bind( 'resize', function(e){ 
-							resetCards(0);
-					});
+              resetCards(0);
+          });
 
      function smallHeight() {
        return 20;
-				 }
-					
-				 function largeHeight() {
-				   var inputHeight = 70;
+         }
+          
+         function largeHeight() {
+           var inputHeight = 70;
        var returnValue = ($(window).height() - inputHeight ) / 2;
        return returnValue;
-				 }
-					
-					function setEditWidth(desiredWidth) {
+         }
+          
+          function setEditWidth(desiredWidth) {
        var newWidth = 0;
-							if (desiredWidth < 1) {
-							  newWidth = isEditCollapsed() ? smallEditWidth : $(window).width() - cardPeek;
-							}	else {
+              if (desiredWidth < 1) {
+                newWidth = isEditCollapsed() ? smallEditWidth : $(window).width() - cardPeek;
+              }	else {
          newWidth = desiredWidth;
-							}							
+              }							
 
-							var newCardWidth = ($(window).width() - newWidth - padding);
-							if ($('#edit').width() != newWidth) {
+              var newCardWidth = ($(window).width() - newWidth - padding);
+              if ($('#edit').width() != newWidth) {
          
-									if (isEditCollapsed()) {
-									  lockCardWidths();
-									}
-									if (desiredWidth != smallEditWidth) {
+                  if (isEditCollapsed()) {
+                    lockCardWidths();
+                  }
+                  if (desiredWidth != smallEditWidth) {
            $('#editContent').width(newWidth);
-									}									
-									if (isEditCollapsed() || (desiredWidth == smallEditWidth)) {
-									  $('#edit').stop().animate({width:newWidth});
-									} else {		
-									  $('#edit').width(newWidth);
-									}		
-									$('#cardHolder').stop().animate({width:newCardWidth});
-							} else {
-									$('#cardHolder').width(newCardWidth);
-									unlockCardWidths();
-							}
-							
-							$('#cmd').width($(window).width() - smallEditWidth*2 - 50);
-					}
-					
-					function lockCardWidths() {
-							$('#log').width( $('#log').width() ); 
-							$('#look').width( $('#look').width() ); 
-					}
+                  }									
+                  if (isEditCollapsed() || (desiredWidth == smallEditWidth)) {
+                    $('#edit').stop().animate({width:newWidth});
+                  } else {		
+                    $('#edit').width(newWidth);
+                  }		
+                  $('#cardHolder').stop().animate({width:newCardWidth});
+              } else {
+                  $('#cardHolder').width(newCardWidth);
+                  unlockCardWidths();
+              }
+              
+              $('#cmd').width($(window).width() - smallEditWidth*2 - 50);
+          }
+          
+          function lockCardWidths() {
+              $('#log').width( $('#log').width() ); 
+              $('#look').width( $('#look').width() ); 
+          }
 
-					function unlockCardWidths() {
-							$('#log').width( 'auto' ); 
-							$('#look').width( 'auto' ); 
-					}
+          function unlockCardWidths() {
+              $('#log').width( 'auto' ); 
+              $('#look').width( 'auto' ); 
+          }
 
-					
-					function resetCards() {
-							$('#log').height(largeHeight());
-							$('#look').height(largeHeight());
+          
+          function resetCards() {
+              $('#log').height(largeHeight());
+              $('#look').height(largeHeight());
        $('#edit').height(largeHeight()*2+15);
-							setEditWidth(0);
-					}
-					
-					function isEditCollapsed() {
-					  var returnValue = ($('#edit').width() == smallEditWidth);
-							console.log(returnValue+" "+$('#edit').width()+" == "+smallEditWidth);
-							return returnValue;
-					}
+              setEditWidth(0);
+          }
+          
+          function isEditCollapsed() {
+            var returnValue = ($('#edit').width() == smallEditWidth);
+              console.log(returnValue+" "+$('#edit').width()+" == "+smallEditWidth);
+              return returnValue;
+          }
 
-					// only way I can get the cards animating at the same time..
-					$('#log').click( function() {
-			  		setEditWidth(smallEditWidth);
+          // only way I can get the cards animating at the same time..
+          $('#log').click( function() {
+            setEditWidth(smallEditWidth);
      });
 
-					$('#look').click( function() {
-			  		setEditWidth(smallEditWidth);
+          $('#look').click( function() {
+            setEditWidth(smallEditWidth);
      });
 
-					$('#edit').click( function() {
-							
-							var newWidth = !isEditCollapsed() ? smallEditWidth : $(window).width() - cardPeek;
-							setEditWidth(newWidth);
+          $('#edit').click( function() {
+              
+              var newWidth = !isEditCollapsed() ? smallEditWidth : $(window).width() - cardPeek;
+              setEditWidth(newWidth);
      });
-					
-					$('#userInput').click( function() {
+          
+          $('#userInput').click( function() {
        $('#cmd').focus();
-							  setEditWidth(smallEditWidth);
+                setEditWidth(smallEditWidth);
          if ($('#log').height() != smallHeight()) {
            $('#log').height(largeHeight());
          }
@@ -108,8 +108,8 @@
 
      });
 
-					resetCards();
-					
+          resetCards();
+          
 }
 
 //------- from cow.js to handle sending and receiving messages..
@@ -147,7 +147,7 @@ function sendCmd(cmd) {
   socket.emit('cmd', jsonCmd);
 }
 
-// handle the respose from the server..
+// handle the response from the server..
 function handleMsg(data) {
   console.log("=got msg=");
   console.log(data);
@@ -155,9 +155,17 @@ function handleMsg(data) {
   if (typeof data.player !== 'undefined') {
     settings.player = data.player;
   }
-  // was a log msg recieved eg "[123456] look[s] around"
+  // was a log msg recieved eg "[123456] look around"
   if (data.log !== undefined) {
-    // TODO: a log msg will have params that need converting into the nice clickable objects..
+    // all numbers in square brackets get replaced by clickable links eg: "[12345] says 'Hi'"
+    var matches = data.log.match(/(\d+)/g);
+    matches.forEach (
+      function(id) {
+        var objOne = objStore.getObj(id);
+        data.log = data.log.replace('['+id+']', objOne.htmlLink);
+      }
+    );
+
     addMessage( data.log+"<br/>" );
   }
   if( data.look !== undefined ) {
@@ -186,7 +194,7 @@ function formatForReading(sourceText) {
 function addMessage( msg ) {
   $('#log').append( "<div class='log_entry'>"+msg+"</div>\n" );
 }
-			
+      
 function clickObj(id) {
   // TODO: correctly set the locaiton for this player at the right time (whem moving - from a response from the server thet they are there..)
   var cmd = 'read';
@@ -202,4 +210,4 @@ function clickObj(id) {
 // ------ end from cow.js
 
 
-			
+      

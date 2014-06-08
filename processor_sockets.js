@@ -81,8 +81,22 @@ function doMsg(words) {
   data.words.shift();
   var msgPrefix = '[$actor] says';
   var thisMsg = msgPrefix+' '+data.words.join(' ');
+  thisMsg = dataToIds(thisMsg);
   console.log("=sending msg=", thisMsg);
   io.sockets.emit('msg', {log: thisMsg}, function() { console.log("=message sent="); });  
+}
+
+// converts things like [$actor] into [1234] where data.actor = 1234;
+function dataToIds(srcString) {
+  var matches = srcString.match(/\$\w+\b/g);
+
+  matches.forEach (
+    function (item) {
+    item = item.replace(/\$/, '');
+       srcString = srcString.replace('[$'+item+']', data[item]);
+     }
+  );
+  return srcString;
 }
 
 // change the player's location..
